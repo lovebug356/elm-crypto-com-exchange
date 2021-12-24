@@ -1,0 +1,22 @@
+image: node:latest
+
+definitions:
+  steps:
+    - step: &build-and-test
+        name: Building & Testing
+        caches:
+          - node
+        script:
+          - npm install -g elm elm-test elm-review --unsafe-perm=true
+          - npm ci
+          - npx elm-review
+          - elm-test
+
+pipelines:
+  default:
+    - step: *build-and-test
+  branches:
+    develop:
+      - step: *build-and-test
+    master:
+      - step: *build-and-test

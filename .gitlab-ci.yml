@@ -1,0 +1,19 @@
+image: node:latest
+
+cache:
+  paths:
+    - node_modules/
+
+stages:
+  - test
+
+default:
+  before_script:
+    - npm install -g elm elm-test --unsafe-perm=true
+    - npm ci
+
+test:
+  stage: test
+  script:
+    - elm-test
+    - npx elm-review
