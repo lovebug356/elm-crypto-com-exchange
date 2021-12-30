@@ -35,7 +35,7 @@ getInstruments : Configuration -> ResponseHandler (List Instrument) msg
 getInstruments environment =
     RequestBuilder.get environment
         |> RequestBuilder.withPath "public/get-instruments"
-        |> RequestBuilder.withDecoder Decoder.instrumentListResponse
+        |> RequestBuilder.withDecoder Decoder.decodeInstrumentListResponse
         |> RequestBuilder.build
 
 
@@ -45,7 +45,7 @@ getTickerList : Configuration -> ResponseHandler (List Ticker) msg
 getTickerList environment =
     RequestBuilder.get environment
         |> RequestBuilder.withPath "public/get-ticker"
-        |> RequestBuilder.withDecoder Decoder.tickerListResponse
+        |> RequestBuilder.withDecoder Decoder.decodeTickerListResponse
         |> RequestBuilder.build
 
 
@@ -56,7 +56,7 @@ getTicker environment (InstrumentName instrumentName) =
     RequestBuilder.get environment
         |> RequestBuilder.withPath "public/get-ticker"
         |> RequestBuilder.withQueryParameter "instrument_name" instrumentName
-        |> RequestBuilder.withDecoder Decoder.tickerResponse
+        |> RequestBuilder.withDecoder Decoder.decodeTickerResponse
         |> RequestBuilder.build
 
 
@@ -68,7 +68,7 @@ getCandlestick environment (InstrumentName instrumentName) (Interval interval) =
         |> RequestBuilder.withPath "public/get-candlestick"
         |> RequestBuilder.withQueryParameter "instrument_name" instrumentName
         |> RequestBuilder.withQueryParameter "timeframe" interval
-        |> RequestBuilder.withDecoder Decoder.candlestickResponse
+        |> RequestBuilder.withDecoder Decoder.decodeCandlestickResponse
         |> RequestBuilder.build
 
 
@@ -79,7 +79,7 @@ getTradeList environment instrumentName =
     RequestBuilder.get environment
         |> RequestBuilder.withPath "public/get-trades"
         |> RequestBuilder.withOptionalQueryParameter "instrument_name" (instrumentName |> Maybe.map (\(InstrumentName name) -> name))
-        |> RequestBuilder.withDecoder Decoder.tradeListResponse
+        |> RequestBuilder.withDecoder Decoder.decodeTradeListResponse
         |> RequestBuilder.build
 
 
@@ -89,7 +89,7 @@ getAccountSummary : PrivateConfiguration -> ResponseHandler (List Account) msg
 getAccountSummary environment =
     RequestBuilder.post environment
         |> RequestBuilder.withPath "private/get-account-summary"
-        |> RequestBuilder.withDecoder Decoder.accountSummaryResponse
+        |> RequestBuilder.withDecoder Decoder.decodeAccountSummaryResponse
         |> RequestBuilder.build
 
 
@@ -101,7 +101,7 @@ cancelOrder environment (InstrumentName instrumentName) (OrderId orderId) =
         |> RequestBuilder.withPath "private/cancel-order"
         |> RequestBuilder.withBodyParameter "instrument_name" instrumentName
         |> RequestBuilder.withBodyParameter "order_id" orderId
-        |> RequestBuilder.withDecoder Decoder.unitResponse
+        |> RequestBuilder.withDecoder Decoder.decodeUnitResponse
         |> RequestBuilder.build
 
 

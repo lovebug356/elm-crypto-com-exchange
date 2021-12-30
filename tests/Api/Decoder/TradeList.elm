@@ -14,14 +14,14 @@ suite =
             "Decode Get Ticker List"
             (\_ ->
                 exampleResponseTradeList
-                    |> decodeString Decoder.tradeListResponse
+                    |> decodeString Decoder.decodeTradeListResponse
                     |> expectFirstInstrumentName "ICX_CRO"
             )
         , test
             "Decode example from real server"
             (\_ ->
                 exampleFromRealServer
-                    |> decodeString Decoder.tradeListResponse
+                    |> decodeString Decoder.decodeTradeListResponse
                     |> Expect.ok
             )
         ]

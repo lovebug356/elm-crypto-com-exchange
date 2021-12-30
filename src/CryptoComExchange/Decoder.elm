@@ -1,56 +1,56 @@
 module CryptoComExchange.Decoder exposing
-    ( accountSummaryResponse
-    , candlestickResponse
-    , instrumentListResponse
+    ( decodeAccountSummaryResponse
+    , decodeCandlestickResponse
+    , decodeInstrumentListResponse
+    , decodeTickerListResponse
+    , decodeTickerResponse
+    , decodeTradeListResponse
+    , decodeUnitResponse
     , orderReferenceResponse
-    , tickerListResponse
-    , tickerResponse
-    , tradeListResponse
-    , unitResponse
     )
 
-import CryptoComExchange exposing (Account, Candle, Candlestick, Instrument, OrderId(..), OrderReference, Ticker, Trade)
+import CryptoComExchange exposing (Account, Candle, Candlestick, Instrument, InstrumentName(..), OrderId(..), OrderReference, Ticker, Trade)
 import Json.Decode as Decode
 import Json.Decode.Pipeline exposing (required)
 import Time
 
 
-instrumentListResponse : Decode.Decoder (List Instrument)
-instrumentListResponse =
-    Decode.field "instruments" (Decode.list instrument)
-        |> cryptoResponse
+decodeInstrumentListResponse : Decode.Decoder (List Instrument)
+decodeInstrumentListResponse =
+    Decode.field "instruments" (Decode.list decodeInstrument)
+        |> decodeCryptoResponse
         |> Decode.map (\response -> response.result)
 
 
-instrument : Decode.Decoder Instrument
-instrument =
+decodeInstrument : Decode.Decoder Instrument
+decodeInstrument =
     Decode.succeed Instrument
-        |> required "instrument_name" Decode.string
-        |> required "quote_currency" Decode.string
+        |> required "instrument_name" decodeInstrumentNameDecoder
         |> required "base_currency" Decode.string
+        |> required "quote_currency" Decode.string
         |> required "price_decimals" Decode.int
         |> required "quantity_decimals" Decode.int
         |> required "margin_trading_enabled" Decode.bool
 
 
-tickerListResponse : Decode.Decoder (List Ticker)
-tickerListResponse =
-    Decode.field "data" (Decode.list ticker)
-        |> cryptoResponse
+decodeTickerListResponse : Decode.Decoder (List Ticker)
+decodeTickerListResponse =
+    Decode.field "data" (Decode.list decodeTicker)
+        |> decodeCryptoResponse
         |> Decode.map (\response -> response.result)
 
 
-tickerResponse : Decode.Decoder Ticker
-tickerResponse =
-    Decode.field "data" ticker
-        |> cryptoResponse
+decodeTickerResponse : Decode.Decoder Ticker
+decodeTickerResponse =
+    Decode.field "data" decodeTicker
+        |> decodeCryptoResponse
         |> Decode.map (\response -> response.result)
 
 
-ticker : Decode.Decoder Ticker
-ticker =
+decodeTicker : Decode.Decoder Ticker
+decodeTicker =
     Decode.succeed Ticker
-        |> required "i" Decode.string
+        |> required "i" decodeInstrumentNameDecoder
         |> required "b" Decode.float
         |> required "k" Decode.float
         |> required "a" Decode.float
@@ -61,23 +61,28 @@ ticker =
         |> required "c" Decode.float
 
 
-candlestickResponse : Decode.Decoder Candlestick
-candlestickResponse =
-    candlestick
-        |> cryptoResponse
+decodeInstrumentNameDecoder : Decode.Decoder InstrumentName
+decodeInstrumentNameDecoder =
+    Decode.map InstrumentName Decode.string
+
+
+decodeCandlestickResponse : Decode.Decoder Candlestick
+decodeCandlestickResponse =
+    decodeCandlestick
+        |> decodeCryptoResponse
         |> Decode.map (\response -> response.result)
 
 
-candlestick : Decode.Decoder Candlestick
-candlestick =
+decodeCandlestick : Decode.Decoder Candlestick
+decodeCandlestick =
     Decode.succeed Candlestick
         |> required "instrument_name" Decode.string
         |> required "interval" Decode.string
-        |> required "data" (Decode.list candle)
+        |> required "data" (Decode.list decodeCandle)
 
 
-candle : Decode.Decoder Candle
-candle =
+decodeCandle : Decode.Decoder Candle
+decodeCandle =
     Decode.succeed Candle
         |> required "t" Decode.int
         |> required "o" Decode.float
@@ -87,41 +92,41 @@ candle =
         |> required "v" Decode.float
 
 
-tradeListResponse : Decode.Decoder (List Trade)
-tradeListResponse =
-    Decode.field "data" (Decode.list trade)
-        |> cryptoResponse
+decodeTradeListResponse : Decode.Decoder (List Trade)
+decodeTradeListResponse =
+    Decode.field "data" (Decode.list decodeTrade)
+        |> decodeCryptoResponse
         |> Decode.map .result
 
 
-trade : Decode.Decoder Trade
-trade =
+decodeTrade : Decode.Decoder Trade
+decodeTrade =
     Decode.succeed Trade
         |> required "i" Decode.string
         |> required "p" Decode.float
         |> required "q" Decode.float
         |> required "s" Decode.string
         |> required "d" Decode.int
-        |> required "t" timeInMillis
+        |> required "t" decodeTimeInMillis
 
 
-timeInMillis : Decode.Decoder Time.Posix
-timeInMillis =
+decodeTimeInMillis : Decode.Decoder Time.Posix
+decodeTimeInMillis =
     Decode.int
         |> Decode.map Time.millisToPosix
 
 
-accountSummaryResponse : Decode.Decoder (List Account)
-accountSummaryResponse =
-    account
+decodeAccountSummaryResponse : Decode.Decoder (List Account)
+decodeAccountSummaryResponse =
+    decodeAccount
         |> Decode.list
         |> Decode.field "accounts"
-        |> cryptoResponse
+        |> decodeCryptoResponse
         |> Decode.map .result
 
 
-account : Decode.Decoder Account
-account =
+decodeAccount : Decode.Decoder Account
+decodeAccount =
     Decode.succeed Account
         |> required "balance" Decode.float
         |> required "available" Decode.float
@@ -130,29 +135,29 @@ account =
         |> required "currency" Decode.string
 
 
-unitResponse : Decode.Decoder ()
-unitResponse =
+decodeUnitResponse : Decode.Decoder ()
+decodeUnitResponse =
     Decode.succeed ()
-        |> cryptoResponse
+        |> decodeCryptoResponse
         |> Decode.map .result
 
 
 orderReferenceResponse : Decode.Decoder OrderReference
 orderReferenceResponse =
-    orderReference
-        |> cryptoResponse
+    decodeOrderReference
+        |> decodeCryptoResponse
         |> Decode.map .result
 
 
-orderReference : Decode.Decoder OrderReference
-orderReference =
+decodeOrderReference : Decode.Decoder OrderReference
+decodeOrderReference =
     Decode.succeed OrderReference
-        |> required "order_id" orderId
+        |> required "order_id" decodeOrderId
         |> required "client_oid" Decode.string
 
 
-orderId : Decode.Decoder OrderId
-orderId =
+decodeOrderId : Decode.Decoder OrderId
+decodeOrderId =
     Decode.map OrderId Decode.string
 
 
@@ -163,8 +168,8 @@ type alias CryptoResponse result =
     }
 
 
-cryptoResponse : Decode.Decoder result -> Decode.Decoder (CryptoResponse result)
-cryptoResponse decoder =
+decodeCryptoResponse : Decode.Decoder result -> Decode.Decoder (CryptoResponse result)
+decodeCryptoResponse decoder =
     Decode.succeed CryptoResponse
         |> required "method" Decode.string
         |> required "code" Decode.int

@@ -13,7 +13,7 @@ suite =
             "Decode Get Account Summary"
             (\_ ->
                 exampleResponse
-                    |> decodeString Decoder.accountSummaryResponse
+                    |> decodeString Decoder.decodeAccountSummaryResponse
                     |> Result.map List.length
                     |> Expect.equal (Ok 1)
             )

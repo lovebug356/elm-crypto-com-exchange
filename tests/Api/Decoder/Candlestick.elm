@@ -13,7 +13,7 @@ suite =
             "Decode Get Instruments"
             (\_ ->
                 exampleResponse
-                    |> decodeString Decoder.candlestickResponse
+                    |> decodeString Decoder.decodeCandlestickResponse
                     |> Expect.ok
             )
         ]

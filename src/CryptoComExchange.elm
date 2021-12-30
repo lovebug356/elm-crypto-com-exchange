@@ -12,7 +12,7 @@ import Time
 {-| Information of an instrument.
 -}
 type alias Instrument =
-    { instrumentName : String
+    { instrumentName : InstrumentName
     , baseCurrency : String
     , quoteCurrency : String
     , priceDecimals : Int
@@ -24,7 +24,7 @@ type alias Instrument =
 {-| Information of a ticker
 -}
 type alias Ticker =
-    { instrumentName : String
+    { instrumentName : InstrumentName
     , currentBidPrice : Float
     , currentAskPrice : Float
     , priceOfLatestTrade : Float

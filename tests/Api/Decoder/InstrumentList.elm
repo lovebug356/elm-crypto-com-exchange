@@ -10,18 +10,22 @@ suite : Test
 suite =
     describe "CryptoExchange.Api.Decoder.InstrumentList"
         [ test
-            "Decode Get Instrument List"
+            "decode instrument list"
             (\_ ->
                 exampleResponseList
-                    |> decodeString Decoder.instrumentListResponse
+                    |> decodeString Decoder.decodeInstrumentListResponse
                     |> Expect.ok
             )
         , test
-            "Decode Get Instrument"
+            "decode base currency in instrument list"
             (\_ ->
                 exampleResponseList
-                    |> decodeString Decoder.instrumentListResponse
-                    |> Expect.ok
+                    |> decodeString Decoder.decodeInstrumentListResponse
+                    |> Result.mapError (always "failed to decode")
+                    |> Result.map List.head
+                    |> Result.andThen (Result.fromMaybe "no instrument found")
+                    |> Result.map (\instrument -> instrument.baseCurrency)
+                    |> Expect.equal (Ok "USDT")
             )
         ]
 

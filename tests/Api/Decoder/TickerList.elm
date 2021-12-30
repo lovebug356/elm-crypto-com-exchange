@@ -10,17 +10,17 @@ suite : Test
 suite =
     describe "CryptoExchange.Api.Decoder.TickerList"
         [ test
-            "Decode Get Ticker List"
+            "decode ticker list"
             (\_ ->
                 exampleResponseTickerList
-                    |> decodeString Decoder.tickerListResponse
+                    |> decodeString Decoder.decodeTickerListResponse
                     |> Expect.ok
             )
         , test
-            "Decode Get Ticker "
+            "decode ticker"
             (\_ ->
                 exampleResponseTicker
-                    |> decodeString Decoder.tickerResponse
+                    |> decodeString Decoder.decodeTickerResponse
                     |> Expect.ok
             )
         ]
